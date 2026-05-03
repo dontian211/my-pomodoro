@@ -672,16 +672,24 @@ function createRipple(e,el){var sp=document.createElement('span'),rc=el.getBound
 
 function initVisibility(){
   var pausedBySwitch=false;
-  window.addEventListener('blur',function(){
-    if(userData&&userData.settings.learningMode&&timerRunning){pauseTimer();pausedBySwitch=true}
-  });
-  function handleReturn(){
-    if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
-    if(timerRunning)tick()
-  }
-  window.addEventListener('focus',handleReturn);
+  var hideTimer=null;
   document.addEventListener('visibilitychange',function(){
-    if(!document.hidden)handleReturn()
+    if(document.hidden){
+      hideTimer=setTimeout(function(){hideTimer=null},500)
+    }else{
+      if(hideTimer){clearTimeout(hideTimer);hideTimer=null}
+      if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
+      if(timerRunning)tick()
+    }
+  });
+  window.addEventListener('blur',function(){
+    if(hideTimer&&userData&&userData.settings.learningMode&&timerRunning){
+      clearTimeout(hideTimer);hideTimer=null;
+      pauseTimer();pausedBySwitch=true
+    }
+  });
+  window.addEventListener('focus',function(){
+    if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
   })
 }
 function initManifest(){
