@@ -672,23 +672,25 @@ function createRipple(e,el){var sp=document.createElement('span'),rc=el.getBound
 
 function initVisibility(){
   var pausedBySwitch=false;
-  var hideTimer=null;
+  var blurred=false;
+  window.addEventListener('blur',function(){
+    blurred=true
+  });
   document.addEventListener('visibilitychange',function(){
     if(document.hidden){
-      hideTimer=setTimeout(function(){hideTimer=null},500)
+      if(!blurred){
+        if(userData&&userData.settings.learningMode&&timerRunning){
+          pauseTimer();pausedBySwitch=true
+        }
+      }
+      blurred=false
     }else{
-      if(hideTimer){clearTimeout(hideTimer);hideTimer=null}
       if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
       if(timerRunning)tick()
     }
   });
-  window.addEventListener('blur',function(){
-    if(hideTimer&&userData&&userData.settings.learningMode&&timerRunning){
-      clearTimeout(hideTimer);hideTimer=null;
-      pauseTimer();pausedBySwitch=true
-    }
-  });
   window.addEventListener('focus',function(){
+    blurred=false;
     if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
   })
 }
