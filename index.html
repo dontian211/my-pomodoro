@@ -672,18 +672,18 @@ function createRipple(e,el){var sp=document.createElement('span'),rc=el.getBound
 
 function initVisibility(){
   var pausedBySwitch=false;
-  var timeoutFired=false;
-  var pageVisible=false;
+  var intervalFired=false;
+  var intervalId=null;
   document.addEventListener('visibilitychange',function(){
     if(document.hidden){
-      timeoutFired=false;
-      pageVisible=false;
-      setTimeout(function(){
-        if(!pageVisible)timeoutFired=true
-      },2000)
+      intervalFired=false;
+      intervalId=setInterval(function(){
+        intervalFired=true;
+        clearInterval(intervalId)
+      },100)
     }else{
-      pageVisible=true;
-      if(!timeoutFired&&userData&&userData.settings.learningMode&&timerRunning){
+      if(intervalId){clearInterval(intervalId);intervalId=null}
+      if(!intervalFired&&userData&&userData.settings.learningMode&&timerRunning){
         pauseTimer();pausedBySwitch=true
       }
       if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
