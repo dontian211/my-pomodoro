@@ -672,26 +672,23 @@ function createRipple(e,el){var sp=document.createElement('span'),rc=el.getBound
 
 function initVisibility(){
   var pausedBySwitch=false;
-  var blurred=false;
-  window.addEventListener('blur',function(){
-    blurred=true
-  });
+  var timeoutFired=false;
+  var pageVisible=false;
   document.addEventListener('visibilitychange',function(){
     if(document.hidden){
-      if(!blurred){
-        if(userData&&userData.settings.learningMode&&timerRunning){
-          pauseTimer();pausedBySwitch=true
-        }
-      }
-      blurred=false
+      timeoutFired=false;
+      pageVisible=false;
+      setTimeout(function(){
+        if(!pageVisible)timeoutFired=true
+      },500)
     }else{
+      pageVisible=true;
+      if(!timeoutFired&&userData&&userData.settings.learningMode&&timerRunning){
+        pauseTimer();pausedBySwitch=true
+      }
       if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
       if(timerRunning)tick()
     }
-  });
-  window.addEventListener('focus',function(){
-    blurred=false;
-    if(pausedBySwitch){pausedBySwitch=false;showResumeDlg()}
   })
 }
 function initManifest(){
