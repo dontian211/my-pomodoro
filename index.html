@@ -680,7 +680,7 @@ function initVisibility(){
       pageVisible=false;
       setTimeout(function(){
         if(!pageVisible)timeoutFired=true
-      },500)
+      },2000)
     }else{
       pageVisible=true;
       if(!timeoutFired&&userData&&userData.settings.learningMode&&timerRunning){
